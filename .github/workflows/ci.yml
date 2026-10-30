@@ -1,0 +1,25 @@
+
+name: Credit Risk Project CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose
+        run: docker compose config
+
+      - name: Build FastAPI Docker image
+        run: docker build -f Dockerfile.api -t credit-risk-api .
+
+      - name: Build Streamlit Docker image
+        run: docker build -f Dockerfile.frontend -t credit-risk-frontend .
