@@ -1,5 +1,5 @@
 
-name: Credit Risk Project CI
+name: Credit Risk Project CI/CD
 
 on:
   push:
@@ -7,9 +7,15 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      ECR_REGISTRY: 164729689161.dkr.ecr.ap-southeast-2.amazonaws.com
 
     steps:
       - name: Checkout repository
@@ -31,8 +37,37 @@ jobs:
       - name: Validate Docker Compose
         run: docker compose config
 
-      - name: Build FastAPI Docker image
-        run: docker build -f Dockerfile.api -t credit-risk-api .
+      - name: Configure AWS credentials
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Build Streamlit Docker image
-        run: docker build -f Dockerfile.frontend -t credit-risk-frontend .
+      - name: Login to Amazon ECR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push FastAPI image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.api
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          tags: |
+            164729689161.dkr.ecr.ap-southeast-2.amazonaws.com/credit-risk-api:latest
+            164729689161.dkr.ecr.ap-southeast-2.amazonaws.com/credit-risk-api:${{ github.sha }}
+
+      - name: Build and push Streamlit image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.frontend
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          tags: |
+            164729689161.dkr.ecr.ap-southeast-2.amazonaws.com/credit-risk-frontend:latest
+            164729689161.dkr.ecr.ap-southeast-2.amazonaws.com/credit-risk-frontend:${{ github.sha }}
