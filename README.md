@@ -122,11 +122,9 @@ The trained model and its supporting preprocessing components are loaded by the 
 
 The application uses the following project-specific scoring formula:
 
-\[
-\text{Credit Score} = 300 + (1-P)\times600
-\]
+**Credit Score = 300 + (1 - P) × 600**
 
-Where \(P\) represents the predicted probability of default.
+Where **P** represents the predicted probability of default.
 
 The resulting score ranges from 300 to 900.
 
@@ -402,16 +400,14 @@ credit-risk-project/
 │       └── ci.yml
 │
 ├── tests/
-│   └── ...
+│   └── test_api.py
 │
 ├── Dockerfile.api
 ├── Dockerfile.frontend
-├── docker-compose.yml
+├── compose.yaml
 ├── requirements.txt
 └── README.md
 ```
-
-*Adjust the structure above if your actual repository contains additional files or different folder names.*
 
 ## 13. Local Setup and Execution
 
@@ -487,8 +483,6 @@ The following resources and configuration were retained for future redeployment:
 - Cloud Map service discovery configuration.
 - IAM roles and deployment permissions.
 
-Scaling ECS services to zero stops the running Fargate tasks, but other retained AWS resources may still incur charges, such as ECR image storage and CloudWatch log storage.
-
 ## 15. Key Learnings
 
 This project provided practical experience across the complete machine learning deployment lifecycle.
@@ -548,7 +542,7 @@ This project is developed for educational and portfolio demonstration purposes. 
 
 Data Science | Machine Learning | Generative AI | MLOps
 
-[GitHub Profile](https://github.com/YOUR_GITHUB_USERNAME)
+[GitHub Profile](https://github.com/bhartishr28)
 
 ---
 
