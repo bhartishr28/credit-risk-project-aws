@@ -71,3 +71,19 @@ jobs:
           tags: |
             164729689161.dkr.ecr.ap-southeast-2.amazonaws.com/credit-risk-frontend:latest
             164729689161.dkr.ecr.ap-southeast-2.amazonaws.com/credit-risk-frontend:${{ github.sha }}
+
+      - name: Deploy FastAPI to ECS
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          aws ecs update-service \
+            --cluster credit-risk-cluster \
+            --service credit-risk-api-service \
+            --force-new-deployment
+
+      - name: Deploy Streamlit to ECS
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          aws ecs update-service \
+            --cluster credit-risk-cluster \
+            --service credit-risk-frontend-service \
+            --force-new-deployment        
